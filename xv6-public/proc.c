@@ -636,3 +636,16 @@ int waitpid(int pid, int *status, int options) {
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }//cs153 lab1
+
+void
+setpriority(int this_pri)
+{
+        struct proc *p;
+        struct proc *curproc = myproc();
+        if(this_pri >= 0){
+                waitpid();
+        }else{
+                printf("error: this process's priority is less than 0");
+        }
+
+}
