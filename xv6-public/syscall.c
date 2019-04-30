@@ -106,6 +106,7 @@ extern int sys_uptime(void);
 extern int sys_hello(void); // BR
 extern int sys_exit_lab(void); //cs153 Lab 1
 extern int sys_waitpid(void); //cs153 lab1
+extern int sys_setpriority(void); // CS153 Lab2
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -132,6 +133,7 @@ static int (*syscalls[])(void) = {
 [SYS_hello]   sys_hello, // BR
 [SYS_exit_lab] sys_exit_lab,//cs153 lab1
 [SYS_waitpid] sys_waitpid,//cs153 lab1
+[SYS_setpriority] sys_setpriority,
 };
 
 void

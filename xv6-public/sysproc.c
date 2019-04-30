@@ -123,3 +123,12 @@ sys_waitpid(void)
     return -1;
   return waitpid(pid, status, options);
 }//cs153 lab1
+
+int sys_setpriority(void)
+{
+  int priority;
+  if(argint(0, &priority) < 0)
+  return -1;
+  setpriority(priority);
+  return 0;
+}// CS153 Lab2

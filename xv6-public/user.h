@@ -26,6 +26,7 @@ int uptime(void);
 int hello(void);
 int exit_lab(int);// cs153 lab1
 int waitpid(int, int*, int);//cs153 lab1
+int setpriority(int); // CS153 Lab2
 
 // ulib.c
 int stat(const char*, struct stat*);
