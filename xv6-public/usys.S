@@ -33,3 +33,4 @@ SYSCALL(hello) // BR
 SYSCALL(exit_lab) //cs153 lab1
 SYSCALL(waitpid)//cs153 lab1
 SYSCALL(setpriority) // CS153 Lab2
+SYSCALL(getpriority) // Get

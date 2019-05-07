@@ -124,6 +124,7 @@ void		hello(void); // BR
 void		exit_lab(int status);
 int		waitpid(int pid, int *status, int options);
 void		setpriority(int priority);
+int		getpriority(void);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

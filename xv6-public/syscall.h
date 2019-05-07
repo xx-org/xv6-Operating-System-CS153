@@ -24,3 +24,4 @@
 #define SYS_exit_lab 23//cs153 lab1
 #define SYS_waitpid 24 //cs153 lab1
 #define SYS_setpriority 25 // CS153 Lab2
+#define SYS_getpriority 26 // Get

@@ -132,3 +132,8 @@ int sys_setpriority(void)
   setpriority(priority);
   return 0;
 }// CS153 Lab2
+
+int sys_getpriority(void)
+{
+  return getpriority();
+}
