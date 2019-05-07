@@ -346,15 +346,13 @@ scheduler(void)
 		
 		}
 	}
-	if(largest_priority == 0)
+	if(largest_priority > 0)
 		for(p = ptable.proc; p< &ptable.proc[NPROC]; p++){
 			if(p->pid == largest_priority_pid)
 			{
 				p->priority = 0;
 			}
 		}
-	int counter = 0;
-	int max = 1;
 	struct proc *runp = ptable.proc;
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 		if(p->state == RUNNING)
@@ -362,12 +360,9 @@ scheduler(void)
 	}
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 		if(runp->state == RUNNING)
-			counter++;
-		if(counter >= max)
 		{
 			runp->state = RUNNABLE;
 			sleep(runp, &ptable.lock);
-			counter = 0;
 			runp->priority += 1;
 		  cprintf("%d priority===========: %d \n ", p->pid, p->priority);
 		}
@@ -392,7 +387,7 @@ scheduler(void)
 		// It should have changed its p->state before coming back.
 		c->proc = 0;
 	  }
-	  else {
+	  else if(p->priority > 0){
 		  p->priority -= 1;
 		  cprintf("%d priority: %d \n ", p->pid, p->priority);
 		  }
