@@ -33,9 +33,13 @@ int main(int argc, char *argv[])
 	else if ( pid == 0) {
 
 		setpriority(30-10*i);	
-		for (j=0;j<50000;j++) {
-			for(k=0;k<1000;k++) {
-				asm("nop"); }}
+		int curpri = 30 - 10*i;
+		for (j=0;j<500000;j++) {
+			for(k=0;k<10000;k++) {
+				asm("nop"); }
+				if(getpriority() != curpri){
+					curpri = getpriority();
+					printf(1, "\n child# %d with priority %d has priority %d right now! \n",getpid(),30-10*i, getpriority());}}
 		printf(1, "\n child# %d with priority %d has finished! \n",getpid(),30-10*i);		
 		exit();
         }
