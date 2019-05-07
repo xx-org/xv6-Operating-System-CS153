@@ -336,23 +336,66 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+    int largest_priority = 31;
+    int largest_priority_pid = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		if( p->priority < largest_priority && p->priority >= 0)
+		{
+			largest_priority_pid = p->pid;
+			largest_priority = p->priority;
+		
+		}
+	}
+	if(largest_priority == 0)
+		for(p = ptable.proc; p< &ptable.proc[NPROC]; p++){
+			if(p->pid == largest_priority_pid)
+			{
+				p->priority = 0;
+			}
+		}
+	int counter = 0;
+	int max = 1;
+	struct proc *runp = ptable.proc;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		if(p->state == RUNNING)
+			runp = p;
+	}
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		if(runp->state == RUNNING)
+			counter++;
+		if(counter >= max)
+		{
+			runp->state = RUNNABLE;
+			sleep(runp, &ptable.lock);
+			counter = 0;
+			runp->priority += 1;
+		  cprintf("%d priority===========: %d \n ", p->pid, p->priority);
+		}
       if(p->state != RUNNABLE)
         continue;
-
+	  
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
+      if(p->priority == 0)
+      {
+		c->proc = p;
+		runp = p;
+		switchuvm(p);
+		p->state = RUNNING;
+	    
+		swtch(&(c->scheduler), p->context);
+		switchkvm();
 
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      c->proc = 0;
+		
+		// Process is done running for now.
+		// It should have changed its p->state before coming back.
+		c->proc = 0;
+	  }
+	  else {
+		  p->priority -= 1;
+		  cprintf("%d priority: %d \n ", p->pid, p->priority);
+		  }
     }
     release(&ptable.lock);
 
@@ -640,12 +683,34 @@ int waitpid(int pid, int *status, int options) {
 void
 setpriority(int this_pri)
 {
-        struct proc *p;
-        struct proc *curproc = myproc();
-        if(this_pri >= 0){
-                waitpid();
-        }else{
-                printf("error: this process's priority is less than 0");
-        }
+	struct proc *p;
+    struct proc *curproc = myproc();
+	acquire(&ptable.lock);
+	if(this_pri >= 0 && this_pri < 32){
+	
+        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+			if(p->pid == curproc->pid)
+			{
+				p->priority = this_pri;
+				curproc->priority = this_pri;
+			}
+		}
+    }else{
+		
+        panic("error: this process's priority is less than 0, or larger than 32");
+        
+	}
+
+	
+	release(&ptable.lock);
+	if(this_pri != 0)
+			wait(0);
 
 }
+
+int
+getpriority(){
+	struct proc *curproc =myproc();
+	return curproc->priority;
+}
+
