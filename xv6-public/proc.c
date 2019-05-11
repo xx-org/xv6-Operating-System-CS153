@@ -343,53 +343,36 @@ scheduler(void)
 		{
 			largest_priority_pid = p->pid;
 			largest_priority = p->priority;
-		
 		}
-	}
+	} // Find the highest priority process
+	
 	if(largest_priority > 0)
 		for(p = ptable.proc; p< &ptable.proc[NPROC]; p++){
 			if(p->pid == largest_priority_pid)
 			{
 				p->priority = 0;
 			}
-		}
-	struct proc *runp = ptable.proc;
+		} // Set the highest priority to 0
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-		if(p->state == RUNNING)
-			runp = p;
-	}
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-		if(runp->state == RUNNING)
-		{
-			runp->state = RUNNABLE;
-			sleep(runp, &ptable.lock);
-			runp->priority += 1;
-		  cprintf("%d priority===========: %d \n ", p->pid, p->priority);
-		}
-      if(p->state != RUNNABLE)
-        continue;
-	  
+		if(p->state != RUNNABLE)
+			continue;
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       if(p->priority == 0)
       {
 		c->proc = p;
-		runp = p;
 		switchuvm(p);
 		p->state = RUNNING;
 	    
 		swtch(&(c->scheduler), p->context);
 		switchkvm();
-
-		
 		// Process is done running for now.
 		// It should have changed its p->state before coming back.
 		c->proc = 0;
 	  }
 	  else if(p->priority > 0){
 		  p->priority -= 1;
-		  cprintf("%d priority: %d \n ", p->pid, p->priority);
 		  }
     }
     release(&ptable.lock);
@@ -682,7 +665,6 @@ setpriority(int this_pri)
     struct proc *curproc = myproc();
 	acquire(&ptable.lock);
 	if(this_pri >= 0 && this_pri < 32){
-	
         for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 			if(p->pid == curproc->pid)
 			{
@@ -691,16 +673,11 @@ setpriority(int this_pri)
 			}
 		}
     }else{
-		
         panic("error: this process's priority is less than 0, or larger than 32");
-        
-	}
-
-	
+    }
 	release(&ptable.lock);
 	if(this_pri != 0)
-			wait(0);
-
+		wait(0);
 }
 
 int
